@@ -29,7 +29,33 @@ class ReservaDAO(private val file: File) : IReservaDAO {
     }
 
     override fun obtenerTodas(): List<Reserva> {
-       TODO("Aún no implementado")
+
+        if (!file.exists()) return emptyList()
+
+        return file.readLines()
+            .filter { it.isNotBlank() }
+            .map { linea ->
+
+                val partes = linea.split("|")
+
+                when (partes[0]) {
+
+                    "HOTEL" -> es.iesra.dominio.ReservaHotel.creaInstancia(
+                        descripcion = partes[2],
+                        ubicacion = partes[3],
+                        numeroNoches = partes[4].toInt()
+                    )
+
+                    "VUELO" -> es.iesra.dominio.ReservaVuelo.creaInstancia(
+                        descripcion = partes[2],
+                        origen = partes[3],
+                        destino = partes[4],
+                        horaVuelo = partes[5]
+                    )
+
+                    else -> throw IllegalArgumentException("Tipo desconocido: ${partes[0]}")
+                }
+            }
     }
 
     override fun eliminar(id: Int) {
