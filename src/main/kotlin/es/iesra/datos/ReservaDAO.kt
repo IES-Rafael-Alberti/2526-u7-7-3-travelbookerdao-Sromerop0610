@@ -12,7 +12,20 @@ class ReservaDAO(private val file: File) : IReservaDAO {
     }
 
     override fun guardar(reserva: Reserva) {
-        file.appendText(reserva.toString() + "\n")
+        val linea = when (reserva) {
+
+            is es.iesra.dominio.ReservaHotel -> {
+                "HOTEL|${reserva.id}|${reserva.descripcion}|${reserva.ubicacion}|${reserva.numeroNoches}|${reserva.fechaCreacion}"
+            }
+
+            is es.iesra.dominio.ReservaVuelo -> {
+                "VUELO|${reserva.id}|${reserva.descripcion}|${reserva.origen}|${reserva.destino}|${reserva.horaVuelo}|${reserva.fechaCreacion}"
+            }
+
+            else -> throw IllegalArgumentException("Tipo de reserva no soportado")
+        }
+
+        file.appendText(linea + "\n")
     }
 
     override fun obtenerTodas(): List<Reserva> {
