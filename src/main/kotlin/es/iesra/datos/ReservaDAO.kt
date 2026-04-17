@@ -59,9 +59,41 @@ class ReservaDAO(private val file: File) : IReservaDAO {
     }
 
     override fun eliminar(id: Int) {
-        TODO("Aún no implementado")
-}
-    override fun actualizar(reserva: Reserva) {
-        TODO("Aún no implementado")
 
-    }    }
+        val nuevasLineas = file.readLines()
+            .filter { linea ->
+                val partes = linea.split("|")
+                partes[1].toInt() != id
+            }
+
+        file.writeText(nuevasLineas.joinToString("\n") + "\n")
+    }
+    override fun actualizar(reserva: Reserva) {
+
+        val nuevasLineas = file.readLines().map { linea ->
+
+            val partes = linea.split("|")
+            val idLinea = partes[1].toInt()
+
+            if (idLinea == reserva.id) {
+
+                when (reserva) {
+
+                    is es.iesra.dominio.ReservaHotel -> {
+                        "HOTEL|${reserva.id}|${reserva.descripcion}|${reserva.ubicacion}|${reserva.numeroNoches}|${reserva.fechaCreacion}"
+                    }
+
+                    is es.iesra.dominio.ReservaVuelo -> {
+                        "VUELO|${reserva.id}|${reserva.descripcion}|${reserva.origen}|${reserva.destino}|${reserva.horaVuelo}|${reserva.fechaCreacion}"
+                    }
+
+                    else -> linea
+                }
+
+            } else linea
+        }
+
+        file.writeText(nuevasLineas.joinToString("\n") + "\n")
+    }
+
+}

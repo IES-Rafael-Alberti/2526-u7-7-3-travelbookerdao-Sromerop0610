@@ -6,5 +6,5 @@ interface IReservaDAO {
     fun guardar(reserva: Reserva)
     fun obtenerTodas(): List<Reserva>
     fun eliminar(id: Int)
-    fun actualizar(Reserva: Reserva)
+    fun actualizar(reserva: Reserva)
 }
